@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import AppDataSource from "./config/ormconfig";
 
 const app = express();
 
@@ -12,6 +13,12 @@ app.use(express.urlencoded({ extended: false }));
 app.get("/", (req, res) => {
   res.send("안녕하세요, 기본 페이지입니다.");
 });
+
+AppDataSource.initialize()
+  .then(() => {
+    console.log("데이터베이스 연결 성공");
+  })
+  .catch((error) => console.log(error));
 
 const PORT = 8000;
 app.listen(PORT, () => {
