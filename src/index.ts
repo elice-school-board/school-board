@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import postRoutes from "./routes/posts";
 import AppDataSource from "./config/ormconfig";
 
 const app = express();
@@ -8,6 +9,8 @@ app.use(cors());
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+app.use("/posts", postRoutes);
 
 // 기본 페이지
 app.get("/", (req, res) => {
