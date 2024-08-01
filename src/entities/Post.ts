@@ -32,6 +32,6 @@ export class Post {
   @UpdateDateColumn()
   updatedAt!: Date;
 
-  @Column({ type: "date", nullable: true })
-  season!: Date;
+  @Column()
+  season!: string;
 }

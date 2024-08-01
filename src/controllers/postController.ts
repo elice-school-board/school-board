@@ -21,6 +21,7 @@ export class PostController {
       await postRepository.save(newPost);
       res.status(201).json(newPost);
     } catch (error) {
+      console.error(error);
       res.status(400).json({ message: "게시글 생성 실패" });
     }
   };
@@ -57,7 +58,7 @@ export class PostController {
   // 게시글 수정
   static updatePost = async (req: Request, res: Response) => {
     const id = parseInt(req.params.id);
-    const { title, content } = req.body;
+    const { title, content, season } = req.body;
     const postRepository = AppDataSource.getRepository(Post);
 
     try {
@@ -65,12 +66,14 @@ export class PostController {
       if (post) {
         post.title = title;
         post.content = content;
+        post.season = season;
         await postRepository.save(post);
         res.json(post);
       } else {
         res.status(404).json({ message: "게시글을 찾을 수 없습니다" });
       }
     } catch (error) {
+      console.error(error);
       res.status(400).json({ message: "게시글 수정 실패" });
     }
   };
