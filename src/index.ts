@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import postRoutes from "./routes/posts";
 import commentRoutes from "./routes/comments";
+import likeRoutes from "./routes/likes";
 import AppDataSource from "./config/ormconfig";
 
 const app = express();
@@ -13,6 +14,7 @@ app.use(express.urlencoded({ extended: false }));
 
 app.use("/posts", postRoutes);
 app.use("/comments", commentRoutes);
+app.use("/likes", likeRoutes);
 
 // 기본 페이지
 app.get("/", (req, res) => {

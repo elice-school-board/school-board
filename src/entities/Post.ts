@@ -26,12 +26,15 @@ export class Post {
   @Column("text")
   content!: string;
 
+  @Column({ default: 0 })
+  likesCount!: number;
+
   @CreateDateColumn()
   createdAt!: Date;
 
   @UpdateDateColumn()
   updatedAt!: Date;
 
-  @Column()
+  @Column({ nullable: true })
   season!: string;
 }
