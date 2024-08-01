@@ -5,14 +5,16 @@ import AppDataSource from "../config/ormconfig";
 export class PostController {
   // 게시글 생성
   static createPost = async (req: Request, res: Response) => {
-    const { id, userId, boardId, categoryId, title, content, Season } =
-      req.body;
+    const { userId, boardId, categoryId, title, content, season } = req.body;
     const postRepository = AppDataSource.getRepository(Post);
 
     const newPost = postRepository.create({
+      userId,
+      boardId,
+      categoryId,
       title,
       content,
-      user: { id: userId },
+      season,
     });
 
     try {
@@ -28,7 +30,7 @@ export class PostController {
     const postRepository = AppDataSource.getRepository(Post);
 
     try {
-      const posts = await postRepository.find({ relations: ["author"] });
+      const posts = await postRepository.find();
       res.json(posts);
     } catch (error) {
       res.status(500).json({ message: "게시글 조회 실패" });
@@ -41,7 +43,7 @@ export class PostController {
     const postRepository = AppDataSource.getRepository(Post);
 
     try {
-      const post = await postRepository.findOne(id, { relations: ["author"] });
+      const post = await postRepository.findOne({ where: { id } });
       if (post) {
         res.json(post);
       } else {
@@ -59,7 +61,7 @@ export class PostController {
     const postRepository = AppDataSource.getRepository(Post);
 
     try {
-      const post = await postRepository.findOne(id);
+      const post = await postRepository.findOne({ where: { id } });
       if (post) {
         post.title = title;
         post.content = content;
@@ -79,7 +81,7 @@ export class PostController {
     const postRepository = AppDataSource.getRepository(Post);
 
     try {
-      const post = await postRepository.findOne(id);
+      const post = await postRepository.findOne({ where: { id } });
       if (post) {
         await postRepository.remove(post);
         res.status(204).send();

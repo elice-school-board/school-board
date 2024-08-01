@@ -1,4 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from "typeorm";
 
 @Entity()
 export class Post {
@@ -17,15 +23,15 @@ export class Post {
   @Column()
   title!: string;
 
-  @Column()
+  @Column("text")
   content!: string;
 
-  @Column()
+  @CreateDateColumn()
   createdAt!: Date;
 
-  @Column()
+  @UpdateDateColumn()
   updatedAt!: Date;
 
-  @Column()
-  Season!: Date;
+  @Column({ type: "date", nullable: true })
+  season!: Date;
 }
