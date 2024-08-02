@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import AppDataSource from "../config/ormconfig";
+import AppDataSource from "../database/data-source";
 import { Like } from "../entities/Like";
 import { Post } from "../entities/Post";
 

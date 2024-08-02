@@ -1,9 +1,10 @@
 import { Request, Response } from "express";
 import { Post } from "../entities/Post";
 import { Comment } from "../entities/Comment";
-import AppDataSource from "../config/ormconfig";
+import AppDataSource from "../database/data-source";
 import { Category } from "../entities/Category";
 import { File } from "../entities/File";
+import { Board } from "../entities/Board";
 
 export class PostController {
   // 게시글 생성
@@ -34,10 +35,11 @@ export class PostController {
   // 모든 게시글 조회
   static getAllPosts = async (req: Request, res: Response) => {
     const { sort } = req.query;
-    const { categoryName } = req.body;
+    const { boardName, categoryName } = req.body;
+    const boardRepository = AppDataSource.getRepository(Board);
+    const categoryRepository = AppDataSource.getRepository(Category);
     const postRepository = AppDataSource.getRepository(Post);
     const commentRepository = AppDataSource.getRepository(Comment);
-    const categoryRepository = AppDataSource.getRepository(Category);
 
     try {
       let order = {};
@@ -55,15 +57,20 @@ export class PostController {
           order = { createdAt: "DESC" };
       }
 
-      const category = await categoryRepository.findOne({
-        where: { name: categoryName },
+      const board = await boardRepository.findOne({
+        where: { name: boardName },
       });
 
-      if (category) {
+      if (categoryName) {
+        const category = await categoryRepository.findOne({
+          where: { name: categoryName },
+        });
+
         const posts = await postRepository.find({
-          where: { id: category?.id },
+          where: { boardId: board.id, categoryId: category.id },
           order,
         });
+
         const postWithCommentCount = await Promise.all(
           posts.map(async (post) => {
             const commentCount = await commentRepository.count({

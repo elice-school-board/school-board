@@ -19,5 +19,5 @@ export class User {
     type: "enum",
     enum: RoleType,
   })
-  role: RoleType;
+  role: RoleType; // 권한
 }
