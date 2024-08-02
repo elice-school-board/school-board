@@ -13,7 +13,6 @@ const AppDataSource = new DataSource({
   synchronize: true,
   migrations: ["src/migration/**/*.ts"],
   migrationsRun: true,
-  // dropSchema: true,
 });
 
 export default AppDataSource;

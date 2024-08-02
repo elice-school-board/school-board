@@ -1,10 +1,4 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  CreateDateColumn,
-  UpdateDateColumn,
-} from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
 import { CompetitionType } from "./enums/CompetitionType";
 
 @Entity()
@@ -38,4 +32,16 @@ export class Competition {
     enum: CompetitionType,
   })
   type!: CompetitionType;
+
+  @Column({ nullable: true })
+  scoreA?: number;
+
+  @Column({ nullable: true })
+  scoreB?: number;
+
+  @Column({ nullable: false })
+  awards!: string;
+
+  @Column({ nullable: true })
+  result?: string;
 }
