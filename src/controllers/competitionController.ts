@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import AppDataSource from "../config/ormconfig";
+import AppDataSource from "../database/data-source";
 import { Competition } from "../entities/Comptition";
 import moment from "moment-timezone";
 import { config } from "./config/config";

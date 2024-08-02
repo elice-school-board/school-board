@@ -1,15 +1,29 @@
 import { Request, Response } from "express";
 import { Post } from "../entities/Post";
-import AppDataSource from "../config/ormconfig";
+import AppDataSource from "../database/data-source";
+import { Competition } from "../entities/Comptition";
 
 export class CarouselController {
   // carousel에 표시할 featured 게시글 설정하기
   static featurePost = async (req: Request, res: Response) => {
-    const postId = parseInt(req.params.id);
+    const { boardId, categoryId, postId, competitionId } = req.body;
     const postRepository = AppDataSource.getRepository(Post);
+    const competitionRepository = AppDataSource.getRepository(Competition);
 
     try {
-      const post = await postRepository.findOne({ where: { id: postId } });
+      const conditions = {
+        id: parseInt(postId),
+        boardId: parseInt(boardId),
+        categoryId,
+      };
+
+      // categoryId 존재여부 확인
+      if (categoryId !== undefined && categoryId !== null) {
+        conditions.categoryId = parseInt(categoryId);
+      }
+
+      const post = await postRepository.findOne({ where: conditions });
+
       if (post) {
         post.isCarousel = true;
         await postRepository.save(post);
@@ -25,11 +39,22 @@ export class CarouselController {
 
   // carousel에 표시할 featured 게시글 해제하기
   static unfeaturePost = async (req: Request, res: Response) => {
-    const postId = parseInt(req.params.id);
+    const { boardId, categoryId, postId } = req.body;
     const postRepository = AppDataSource.getRepository(Post);
 
     try {
-      const post = await postRepository.findOne({ where: { id: postId } });
+      const conditions = {
+        id: parseInt(postId),
+        boardId: parseInt(boardId),
+        categoryId,
+      };
+
+      if (categoryId !== undefined && categoryId !== null) {
+        conditions.categoryId = parseInt(categoryId);
+      }
+
+      const post = await postRepository.findOne({ where: conditions });
+
       if (post) {
         post.isCarousel = false;
         await postRepository.save(post);
@@ -50,6 +75,7 @@ export class CarouselController {
     try {
       const featuredPosts = await postRepository.find({
         where: { isCarousel: true },
+        order: { createdAt: "DESC" },
       });
       res.status(200).json(featuredPosts);
     } catch (error) {
