@@ -16,10 +16,10 @@ import { Comment } from "./Comment";
 @Unique(["userId", "commentId"])
 export class Like {
   @PrimaryGeneratedColumn()
-  id!: number;
+  id: number;
 
   @Column()
-  userId!: number;
+  userId: number;
 
   @Column({ nullable: true })
   postId?: number;

@@ -1,22 +1,40 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from "typeorm";
 
 @Entity()
 export class File {
   @PrimaryGeneratedColumn()
-  id!: number;
+  id: number;
 
   @Column()
-  userId!: number;
+  userId: number;
 
   @Column()
-  postId!: number;
+  postId: number;
 
   @Column()
-  conmmentId!: number;
+  commentId: number;
 
   @Column()
-  url!: string;
+  name: string;
 
   @Column()
-  type!: string;
+  mime: string;
+
+  @Column()
+  size: number;
+
+  @Column()
+  url: string;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 }

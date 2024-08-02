@@ -4,6 +4,8 @@ import postRoutes from "./routes/posts";
 import commentRoutes from "./routes/comments";
 import likeRoutes from "./routes/likes";
 import competitionRoutes from "./routes/competitions";
+import carouselRoutes from "./routes/carousels";
+import fileRoutes from "./routes/files";
 import AppDataSource from "./config/ormconfig";
 
 const app = express();
@@ -17,6 +19,8 @@ app.use("/", postRoutes);
 app.use("/", commentRoutes);
 app.use("/", likeRoutes);
 app.use("/", competitionRoutes);
+app.use("/", carouselRoutes);
+app.use("/", fileRoutes);
 
 // 기본 페이지
 app.get("/", (req, res) => {

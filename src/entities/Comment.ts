@@ -9,23 +9,23 @@ import {
 @Entity()
 export class Comment {
   @PrimaryGeneratedColumn()
-  id!: number;
+  id: number;
 
   @Column()
-  userId!: number;
+  userId: number;
 
   @Column()
-  postId!: number;
+  postId: number;
 
   @Column()
-  content!: string;
+  content: string;
 
   @Column({ default: 0 })
-  likesCount!: number;
+  likesCount: number;
 
   @CreateDateColumn()
-  createdAt!: Date;
+  createdAt: Date;
 
   @UpdateDateColumn()
-  updatedAt!: Date;
+  updatedAt: Date;
 }
