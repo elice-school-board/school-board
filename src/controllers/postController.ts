@@ -3,12 +3,14 @@ import { Post } from "../entities/Post";
 import { Comment } from "../entities/Comment";
 import AppDataSource from "../config/ormconfig";
 import { Category } from "../entities/Category";
+import { File } from "../entities/File";
 
 export class PostController {
   // 게시글 생성
   static createPost = async (req: Request, res: Response) => {
     const { userId, boardId, categoryId, title, content, season } = req.body;
     const postRepository = AppDataSource.getRepository(Post);
+    const fileRepository = AppDataSource.getRepository(File);
 
     const newPost = postRepository.create({
       userId,
@@ -20,8 +22,21 @@ export class PostController {
     });
 
     try {
-      await postRepository.save(newPost);
-      res.status(201).json(newPost);
+      const savedPost = await postRepository.save(newPost);
+
+      const files = req.files as Express.Multer.File[];
+      const filePromises = files.map((file) => {
+        const newFile = fileRepository.create({
+          postId: savedPost.id,
+          name: file.originalname,
+          url: file.destination,
+          size: file.size,
+        });
+        return fileRepository.save(newFile);
+      });
+      await Promise.all(filePromises);
+
+      res.status(201).json(savedPost);
     } catch (error) {
       console.error(error);
       res.status(400).json({ message: "게시글 생성 실패" });
@@ -138,60 +153,6 @@ export class PostController {
       }
     } catch (error) {
       res.status(500).json({ message: "게시글 삭제 실패" });
-    }
-  };
-
-  // carousel에 표시할 featured 게시글 설정하기
-  static featurePost = async (req: Request, res: Response) => {
-    const postId = parseInt(req.params.id);
-    const postRepository = AppDataSource.getRepository(Post);
-
-    try {
-      const post = await postRepository.findOne({ where: { id: postId } });
-      if (post) {
-        post.isFeatured = true;
-        await postRepository.save(post);
-        res.json({ message: "게시글이 캐러셀에 올려졌습니다", post });
-      } else {
-        res.status(404).json({ message: "게시글을 찾을 수 없습니다" });
-      }
-    } catch (error) {
-      console.error(error);
-      res.status(400).json({ message: "게시글을 캐러셀 올리기 실패" });
-    }
-  };
-
-  // carousel에 표시할 featured 게시글 해제하기
-  static unfeaturePost = async (req: Request, res: Response) => {
-    const postId = parseInt(req.params.id);
-    const postRepository = AppDataSource.getRepository(Post);
-
-    try {
-      const post = await postRepository.findOne({ where: { id: postId } });
-      if (post) {
-        post.isFeatured = false;
-        await postRepository.save(post);
-        res.json({ message: "게시글이 캐러셀에서 내려졌습니다", post });
-      } else {
-        res.status(404).json({ message: "게시글을 찾을 수 없습니다" });
-      }
-    } catch (error) {
-      console.error(error);
-      res.status(400).json({ message: "게시글을 캐러셀에서 내리기 실패" });
-    }
-  };
-
-  // 캐러셀에 표시할 featured 게시글을 가져오는 경로
-  static getFeaturedPosts = async (req: Request, res: Response) => {
-    const postRepository = AppDataSource.getRepository(Post);
-
-    try {
-      const featuredPosts = await postRepository.find({
-        where: { isFeatured: true },
-      });
-      res.status(200).json(featuredPosts);
-    } catch (error) {
-      res.status(500).json({ message: "캐러셀 게시글들 조회 실패" });
     }
   };
 }

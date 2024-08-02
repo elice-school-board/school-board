@@ -3,14 +3,14 @@ import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
 @Entity()
 export class Point {
   @PrimaryGeneratedColumn()
-  id!: number;
+  id: number;
 
   @Column()
-  team!: string;
+  team: string;
 
   @Column()
-  event!: string;
+  event: string;
 
   @Column()
-  score!: Date;
+  score: Date;
 }

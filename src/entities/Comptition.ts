@@ -4,34 +4,34 @@ import { CompetitionType } from "./enums/CompetitionType";
 @Entity()
 export class Competition {
   @PrimaryGeneratedColumn()
-  id!: number;
+  id: number;
 
   @Column()
-  userId!: number;
+  userId: number;
 
   @Column()
-  boardId!: number;
+  boardId: number;
 
   @Column()
-  categoryId!: number;
+  categoryId: number;
 
   @Column()
-  name!: string;
+  name: string;
 
   @Column()
-  date!: Date;
+  date: Date;
 
   @Column()
-  competitorA!: string;
+  competitorA: string;
 
   @Column()
-  competitorB!: string;
+  competitorB: string;
 
   @Column({
     type: "enum",
     enum: CompetitionType,
   })
-  type!: CompetitionType;
+  type: CompetitionType;
 
   @Column({ nullable: true })
   scoreA?: number;
@@ -39,9 +39,12 @@ export class Competition {
   @Column({ nullable: true })
   scoreB?: number;
 
-  @Column({ nullable: false })
-  awards!: string;
+  @Column({ nullable: true })
+  awards: string;
 
   @Column({ nullable: true })
   result?: string;
+
+  @Column({ default: false })
+  isCarousel: boolean; // 캐러셀에 올릴지 여부
 }

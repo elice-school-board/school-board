@@ -9,35 +9,35 @@ import {
 @Entity()
 export class Post {
   @PrimaryGeneratedColumn()
-  id!: number;
+  id: number;
 
   @Column()
-  userId!: number;
+  userId: number;
 
   @Column()
-  boardId!: number;
+  boardId: number;
 
   @Column({ nullable: true })
   categoryId?: number;
 
   @Column()
-  title!: string;
+  title: string;
 
   @Column("text")
-  content!: string;
-
-  @Column({ default: 0 })
-  likesCount!: number;
+  content: string;
 
   @CreateDateColumn()
-  createdAt!: Date;
+  createdAt: Date;
 
   @UpdateDateColumn()
-  updatedAt!: Date;
+  updatedAt: Date;
 
   @Column({ nullable: true })
   season?: string;
 
+  @Column({ default: 0 })
+  likesCount: number;
+
   @Column({ default: false })
-  isFeatured!: boolean; // 스와이프에 올릴지 여부
+  isCarousel: boolean; // 캐러셀에 올릴지 여부
 }

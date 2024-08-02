@@ -4,20 +4,20 @@ import { RoleType } from "./enums/RoleType";
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
-  id!: number;
+  id: number;
 
   @Column()
-  name!: string;
+  name: string;
 
   @Column()
-  email!: string;
+  email: string;
 
   @Column()
-  password!: string;
+  password: string;
 
   @Column({
     type: "enum",
     enum: RoleType,
   })
-  role!: RoleType;
+  role: RoleType;
 }
