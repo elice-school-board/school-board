@@ -24,18 +24,6 @@ export class PostController {
     try {
       const savedPost = await postRepository.save(newPost);
 
-      const files = req.files as Express.Multer.File[];
-      const filePromises = files.map((file) => {
-        const newFile = fileRepository.create({
-          postId: savedPost.id,
-          name: file.originalname,
-          url: file.destination,
-          size: file.size,
-        });
-        return fileRepository.save(newFile);
-      });
-      await Promise.all(filePromises);
-
       res.status(201).json(savedPost);
     } catch (error) {
       console.error(error);

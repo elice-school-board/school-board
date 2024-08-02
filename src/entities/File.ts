@@ -24,13 +24,13 @@ export class File {
   name: string;
 
   @Column()
-  type: string;
-
-  @Column()
-  url: string;
+  mime: string;
 
   @Column()
   size: number;
+
+  @Column()
+  url: string;
 
   @CreateDateColumn()
   createdAt: Date;

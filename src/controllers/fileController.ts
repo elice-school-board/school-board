@@ -1,15 +1,18 @@
 import { Request, Response } from "express";
-import AppDataSource from "../config/ormconfig";
-import { File } from "../entities/File";
 
 export class FileController {
-  static uploadFileUrl = async (req: Request, res: Response) => {
+  static uploadFileToS3 = async (req: Request, res: Response) => {
     try {
-      console.log("파일컨트롤러");
-      const file = req.file;
-      const files = req.files;
+      const files = req.files as Express.MulterS3.File[];
 
-      return res.status(201).json({ file, files });
+      const fileData = files.map((file) => ({
+        name: file.originalname,
+        mime: file.mimetype,
+        size: file.size,
+        url: file.location,
+      }));
+
+      return res.status(201).json(fileData);
     } catch (error) {
       return res
         .status(404)
