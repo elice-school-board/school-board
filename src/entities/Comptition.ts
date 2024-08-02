@@ -1,10 +1,19 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from "typeorm";
 import { CompetitionType } from "./enums/CompetitionType";
 
 @Entity()
 export class Competition {
   @PrimaryGeneratedColumn()
   id!: number;
+
+  @Column()
+  userId!: number;
 
   @Column()
   boardId!: number;
@@ -19,10 +28,10 @@ export class Competition {
   date!: Date;
 
   @Column()
-  competitiorA!: string;
+  competitorA!: string;
 
   @Column()
-  competitiorB!: string;
+  competitorB!: string;
 
   @Column({
     type: "enum",

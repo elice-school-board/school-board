@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import AppDataSource from "../config/ormconfig";
 import { Like } from "../entities/Like";
+import { Post } from "../entities/Post";
 
 class LikeController {
   static addLike = async (req: Request, res: Response) => {

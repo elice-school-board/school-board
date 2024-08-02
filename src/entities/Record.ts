@@ -9,11 +9,11 @@ export class Record {
   competitionId!: number;
 
   @Column({ nullable: true })
-  scoreA!: number;
+  scoreA?: number;
 
   @Column({ nullable: true })
-  scoreB!: number;
+  scoreB?: number;
 
   @Column({ nullable: true })
-  result!: string;
+  result?: string;
 }

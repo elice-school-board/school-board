@@ -22,10 +22,10 @@ export class Like {
   userId!: number;
 
   @Column({ nullable: true })
-  postId!: number;
+  postId?: number;
 
   @Column({ nullable: true })
-  commentId!: number;
+  commentId?: number;
 
   @BeforeInsert()
   validateFileds() {

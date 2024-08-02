@@ -17,8 +17,8 @@ export class Post {
   @Column()
   boardId!: number;
 
-  @Column()
-  categoryId!: number;
+  @Column({ nullable: true })
+  categoryId?: number;
 
   @Column()
   title!: string;
@@ -36,5 +36,8 @@ export class Post {
   updatedAt!: Date;
 
   @Column({ nullable: true })
-  season!: string;
+  season?: string;
+
+  @Column({ default: false })
+  isFeatured!: boolean; // 스와이프에 올릴지 여부
 }

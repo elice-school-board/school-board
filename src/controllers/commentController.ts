@@ -1,11 +1,12 @@
 import { Request, Response } from "express";
 import { Comment } from "../entities/Comment";
 import AppDataSource from "../config/ormconfig";
+import { MoreThanOrEqual } from "typeorm";
 
 export class CommentController {
   // 댓글 생성
   static createComment = async (req: Request, res: Response) => {
-    const { userId, postId, content, season } = req.body;
+    const { userId, postId, content } = req.body;
     const commentRepository = AppDataSource.getRepository(Comment);
 
     const newComment = commentRepository.create({
@@ -48,7 +49,25 @@ export class CommentController {
         res.status(404).json({ message: "댓글을 찾을 수 없습니다" });
       }
     } catch (error) {
+      console.log(error);
       res.status(500).json({ message: "댓글 조회 실패" });
+    }
+  };
+
+  // 특정 게시글의 베스트 댓글 조회 (베스트 댓글은 좋아요 5개 이상)
+  static getBestCommentByPostId = async (req: Request, res: Response) => {
+    const postId = parseInt(req.params.postId);
+    const commentRepository = AppDataSource.getRepository(Comment);
+
+    try {
+      const bestComment = await commentRepository.find({
+        where: { postId, likesCount: MoreThanOrEqual(5) },
+        order: { likesCount: "DESC" },
+        take: 1,
+      });
+      return res.status(200).json(bestComment);
+    } catch (error) {
+      res.status(500).json({ message: "베스트 댓글 조회 실패", error });
     }
   };
 

@@ -3,6 +3,7 @@ import cors from "cors";
 import postRoutes from "./routes/posts";
 import commentRoutes from "./routes/comments";
 import likeRoutes from "./routes/likes";
+import competitionRoutes from "./routes/competitions";
 import AppDataSource from "./config/ormconfig";
 
 const app = express();
@@ -12,9 +13,10 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-app.use("/posts", postRoutes);
-app.use("/comments", commentRoutes);
-app.use("/likes", likeRoutes);
+app.use("/", postRoutes);
+app.use("/", commentRoutes);
+app.use("/", likeRoutes);
+app.use("/", competitionRoutes);
 
 // 기본 페이지
 app.get("/", (req, res) => {
