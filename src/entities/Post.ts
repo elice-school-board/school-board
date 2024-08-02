@@ -17,8 +17,8 @@ export class Post {
   @Column()
   boardId!: number;
 
-  @Column()
-  categoryId!: number;
+  @Column({ nullable: true })
+  categoryId?: number;
 
   @Column()
   title!: string;
@@ -26,12 +26,18 @@ export class Post {
   @Column("text")
   content!: string;
 
+  @Column({ default: 0 })
+  likesCount!: number;
+
   @CreateDateColumn()
   createdAt!: Date;
 
   @UpdateDateColumn()
   updatedAt!: Date;
 
-  @Column({ type: "date", nullable: true })
-  season!: Date;
+  @Column({ nullable: true })
+  season?: string;
+
+  @Column({ default: false })
+  isFeatured!: boolean; // 스와이프에 올릴지 여부
 }
