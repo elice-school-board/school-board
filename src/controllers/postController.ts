@@ -3,7 +3,6 @@ import { Post } from "../entities/Post";
 import { Comment } from "../entities/Comment";
 import AppDataSource from "../database/data-source";
 import { Category } from "../entities/Category";
-import { File } from "../entities/File";
 import { Board } from "../entities/Board";
 
 export class PostController {
@@ -11,8 +10,8 @@ export class PostController {
   static createPost = async (req: Request, res: Response) => {
     const { userId, boardId, categoryId, title, content, season } = req.body;
     const postRepository = AppDataSource.getRepository(Post);
-    const fileRepository = AppDataSource.getRepository(File);
 
+    // newPost 객체 생성
     const newPost = postRepository.create({
       userId,
       boardId,
@@ -23,6 +22,7 @@ export class PostController {
     });
 
     try {
+      // post 테이블에 newPost 저장
       const savedPost = await postRepository.save(newPost);
 
       res.status(201).json(savedPost);
@@ -34,22 +34,28 @@ export class PostController {
 
   // 모든 게시글 조회
   static getAllPosts = async (req: Request, res: Response) => {
-    const { sort } = req.query;
-    const { boardName, categoryName } = req.body;
+    const { sort } = req.query; // 쿼리에서 sort를 가져온다.
+    const { boardName, categoryName } = req.body; // body에서 boardName, categoryName을 가져온다.
     const boardRepository = AppDataSource.getRepository(Board);
     const categoryRepository = AppDataSource.getRepository(Category);
     const postRepository = AppDataSource.getRepository(Post);
     const commentRepository = AppDataSource.getRepository(Comment);
 
     try {
-      let order = {};
+      let order = {}; // 정렬 객체 초기화
+
       switch (sort) {
+        // 최신순
         case "latest":
           order = { createdAt: "DESC" };
           break;
+        // 오래된순
+
         case "oldest":
           order = { createdAt: "ASC" };
           break;
+
+        // 좋아요순
         case "mostLikes":
           order = { likesCount: "DESC" };
           break;

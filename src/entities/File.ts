@@ -12,15 +12,6 @@ export class File {
   id: number;
 
   @Column()
-  userId: number;
-
-  @Column()
-  postId: number;
-
-  @Column()
-  commentId: number;
-
-  @Column()
   name: string;
 
   @Column()
