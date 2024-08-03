@@ -38,6 +38,9 @@ export class Post {
   @Column({ default: 0 })
   likesCount: number; // 좋아요 수
 
+  @Column({ default: 0 })
+  commentsCount: number;
+
   @Column({ default: false })
   isCarousel: boolean; // 캐러셀에 올릴지 여부
 }
