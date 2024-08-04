@@ -22,18 +22,18 @@ export class User {
     @Column()
     role: RoleType;
 
-    @Column({ name: 'email_token', nullable: true })
+    @Column({ nullable: true })
     emailToken: string;
 
-    @Column({ name: 'email_token_expiry', type: 'timestamp', nullable: true })
+    @Column({ type: 'timestamp', nullable: true })
     emailTokenExpiry: Date;
 
-    @Column({ name: 'reset_password_token', nullable: true })
+    @Column({ nullable: true })
     resetPasswordToken: string;
 
-    @Column({ name: 'reset_password_expiry', type: 'timestamp', nullable: true })
+    @Column({ type: 'timestamp', nullable: true })
     resetPasswordExpiry: Date;
 
-    @Column({ name: 'refresh_token', nullable: true })
+    @Column({ nullable: true })
     refreshToken: string;
 }
