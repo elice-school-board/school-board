@@ -6,6 +6,8 @@ import {
   UpdateDateColumn,
   AfterInsert,
   AfterRemove,
+  ManyToOne,
+  OneToMany,
 } from "typeorm";
 import AppDataSource from "../database/data-source";
 import { Post } from "./Post";
@@ -20,6 +22,22 @@ export class Comment {
 
   @Column()
   postId: number;
+
+  @ManyToOne(
+    () => Comment,
+    (comment) => {
+      comment.replies, { nullable: true, onDelete: "CASCADE" };
+    }
+  )
+  parentCommentId: Comment;
+
+  @OneToMany(
+    () => Comment,
+    (comment) => {
+      comment.parentCommentId;
+    }
+  )
+  replies: Comment[];
 
   @Column()
   content: string;

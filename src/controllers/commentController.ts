@@ -6,13 +6,17 @@ import { MoreThanOrEqual } from "typeorm";
 export class CommentController {
   // 댓글 생성
   static createComment = async (req: Request, res: Response) => {
-    const { userId, postId, content } = req.body;
+    const { userId, content, parentCommentId } = req.body;
+    const postId = Number(req.params.postId);
     const commentRepository = AppDataSource.getRepository(Comment);
 
     const newComment = commentRepository.create({
       userId,
       postId,
       content,
+      parentCommentId: parentCommentId
+        ? await commentRepository.findOne(parentCommentId)
+        : null,
     });
 
     try {
@@ -24,39 +28,27 @@ export class CommentController {
     }
   };
 
-  // 모든 댓글 조회
-  static getAllComments = async (req: Request, res: Response) => {
+  // 특정 게시글의 댓글 및 대댓글 조회
+  static getCommentsByPostId = async (req: Request, res: Response) => {
+    const postId = Number(req.params.postId);
     const commentRepository = AppDataSource.getRepository(Comment);
 
     try {
-      const comments = await commentRepository.find();
+      const comments = await commentRepository.find({
+        where: { postId, parentCommentId: null },
+        relations: ["replies"],
+        order: { createdAt: "DESC" },
+      });
+
       res.json(comments);
     } catch (error) {
       res.status(500).json({ message: "댓글 조회 실패" });
     }
   };
 
-  // 특정 댓글 조회
-  static getCommentById = async (req: Request, res: Response) => {
-    const id = parseInt(req.params.id);
-    const commentRepository = AppDataSource.getRepository(Comment);
-
-    try {
-      const comment = await commentRepository.findOne({ where: { id } });
-      if (comment) {
-        res.json(comment);
-      } else {
-        res.status(404).json({ message: "댓글을 찾을 수 없습니다" });
-      }
-    } catch (error) {
-      console.log(error);
-      res.status(500).json({ message: "댓글 조회 실패" });
-    }
-  };
-
   // 특정 게시글의 베스트 댓글 조회 (베스트 댓글은 좋아요 5개 이상)
   static getBestCommentByPostId = async (req: Request, res: Response) => {
-    const postId = parseInt(req.params.postId);
+    const postId = Number(req.params.postId);
     const commentRepository = AppDataSource.getRepository(Comment);
 
     try {
@@ -73,12 +65,15 @@ export class CommentController {
 
   // 댓글 수정
   static updateComment = async (req: Request, res: Response) => {
-    const id = parseInt(req.params.id);
+    const commentId = Number(req.params.id);
     const { content } = req.body;
     const commentRepository = AppDataSource.getRepository(Comment);
 
     try {
-      const comment = await commentRepository.findOne({ where: { id } });
+      const comment = await commentRepository.findOne({
+        where: { id: commentId },
+      });
+
       if (comment) {
         comment.content = content;
         await commentRepository.save(comment);
@@ -94,11 +89,13 @@ export class CommentController {
 
   // 댓글 삭제
   static deleteComment = async (req: Request, res: Response) => {
-    const id = parseInt(req.params.id);
+    const commentId = Number(req.params.id);
     const commentRepository = AppDataSource.getRepository(Comment);
 
     try {
-      const comment = await commentRepository.findOne({ where: { id } });
+      const comment = await commentRepository.findOne({
+        where: { id: commentId },
+      });
       if (comment) {
         await commentRepository.remove(comment);
         res.status(204).send();

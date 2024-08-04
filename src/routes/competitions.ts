@@ -3,10 +3,19 @@ import { CompetitionController } from "../controllers/competitionController";
 
 const router = Router();
 
-router.post("/competitions", CompetitionController.createCompetition);
-router.get("/competitions", CompetitionController.getAllCompetitions);
-router.get("/competitions/:id", CompetitionController.getCompetitionById);
-router.put("/competitions/:id", CompetitionController.updateCompetition);
-router.delete("/competitions/:id", CompetitionController.deleteCompetition);
+// 대회 정보 생성
+router.post("/", CompetitionController.createCompetition);
+
+// 대회 정보 목록 조회
+router.get("/", CompetitionController.getAllCompetitions);
+
+// 대회 정보 상세 조회
+router.get("/:id", CompetitionController.getCompetitionById);
+
+// 대회 정보 수정
+router.put("/:id", CompetitionController.updateCompetition);
+
+// 대회 정보 삭제
+router.delete("/:id", CompetitionController.deleteCompetition);
 
 export default router;

@@ -12,5 +12,8 @@ export class Point {
   event: string;
 
   @Column()
-  score: Date;
+  point: number;
+
+  @Column()
+  date: Date;
 }

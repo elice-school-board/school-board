@@ -26,12 +26,6 @@ export class Post {
   @Column("text")
   content: string;
 
-  @CreateDateColumn()
-  createdAt: Date;
-
-  @UpdateDateColumn()
-  updatedAt: Date;
-
   @Column({ nullable: true })
   season?: string;
 
@@ -43,4 +37,13 @@ export class Post {
 
   @Column({ default: false })
   isCarousel: boolean; // 캐러셀에 올릴지 여부
+
+  @Column({ default: false })
+  isAnonymous!: boolean;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 }
