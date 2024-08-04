@@ -12,6 +12,7 @@ const AppDataSource = new DataSource({
   entities: ["src/entities/**/*.ts"],
   synchronize: true,
   migrations: ["src/migration/**/*.ts"],
+  migrationsTableName: "migration",
   migrationsRun: true,
   // dropSchema: true,
 });

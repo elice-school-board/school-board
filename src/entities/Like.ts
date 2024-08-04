@@ -7,7 +7,7 @@ import {
   BeforeInsert,
   Unique,
 } from "typeorm";
-import AppDataSource from "../config/ormconfig";
+import AppDataSource from "../database/data-source";
 import { Post } from "./Post";
 import { Comment } from "./Comment";
 
@@ -27,8 +27,9 @@ export class Like {
   @Column({ nullable: true })
   commentId?: number;
 
-  @BeforeInsert()
+  @BeforeInsert() // 데이터 삽입 전 아래 함수를 실행
   validateFileds() {
+    //  postId와 comment가 둘 다 동시에 존재하는지, 존재하지 않는지 확인
     if (this.postId === null && this.commentId === null) {
       throw new Error("Ether postId or commentId must be provided.");
     }
@@ -37,8 +38,9 @@ export class Like {
     }
   }
 
-  @AfterInsert()
+  @AfterInsert() // 데이터 삽입 후 아래 함수 실행
   async updateLikesCount() {
+    // 좋아요 수 증가
     if (this.postId !== null) {
       const postRepository = AppDataSource.getRepository(Post);
       const post = await postRepository.findOne({
@@ -60,8 +62,9 @@ export class Like {
     }
   }
 
-  @AfterRemove()
+  @AfterRemove() // 데이터 삭제 후 아래 함수 실행
   async decreaseLikesCount() {
+    // 좋아요 수 감소 하기
     const postRepository = AppDataSource.getRepository(Post);
     const post = await postRepository.findOne({
       where: { id: this.postId },

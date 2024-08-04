@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { Comment } from "../entities/Comment";
-import AppDataSource from "../config/ormconfig";
+import AppDataSource from "../database/data-source";
 import { MoreThanOrEqual } from "typeorm";
 
 export class CommentController {

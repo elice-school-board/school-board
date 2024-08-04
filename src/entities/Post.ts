@@ -36,7 +36,7 @@ export class Post {
   season?: string;
 
   @Column({ default: 0 })
-  likesCount: number;
+  likesCount: number; // 좋아요 수
 
   @Column({ default: false })
   isCarousel: boolean; // 캐러셀에 올릴지 여부

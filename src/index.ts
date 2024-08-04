@@ -6,7 +6,7 @@ import likeRoutes from './routes/likes';
 import competitionRoutes from './routes/competitions';
 import carouselRoutes from './routes/carousels';
 import fileRoutes from './routes/files';
-import AppDataSource from './config/ormconfig';
+import AppDataSource from './database/data-source';
 import authRoutes from './routes/auth';
 import userRoutes from './routes/users';
 
