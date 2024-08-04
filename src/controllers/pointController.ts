@@ -38,7 +38,7 @@ export class PointController {
         const startDate = new Date(`${year}-01-01`);
         const endDate = new Date(`${year}-12-31`);
         try {
-            // 기록한 팀 최신순대로 보여줌(나이 어린 팀이 1번)
+            // 기록한 팀 최신순대로 보여줌(나이 어린 팀이 처음온다)
             const scores = await pointRepository.find({
                 where: {
                     date: Between(startDate, endDate),
