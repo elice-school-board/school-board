@@ -1,19 +1,13 @@
 import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
 
 @Entity()
-export class Point {
+export class CommentFile {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column()
-  team: string;
+  commentId: string;
 
   @Column()
-  event: string;
-
-  @Column()
-  point: number;
-
-  @Column()
-  date: Date;
+  fileId: number;
 }

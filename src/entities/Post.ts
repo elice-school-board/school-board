@@ -26,18 +26,24 @@ export class Post {
   @Column("text")
   content: string;
 
-  @CreateDateColumn()
-  createdAt: Date;
-
-  @UpdateDateColumn()
-  updatedAt: Date;
-
   @Column({ nullable: true })
   season?: string;
 
   @Column({ default: 0 })
   likesCount: number; // 좋아요 수
 
+  @Column({ default: 0 })
+  commentsCount: number;
+
   @Column({ default: false })
   isCarousel: boolean; // 캐러셀에 올릴지 여부
+
+  @Column({ default: false })
+  isAnonymous!: boolean;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 }

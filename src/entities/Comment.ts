@@ -4,7 +4,13 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  AfterInsert,
+  AfterRemove,
+  ManyToOne,
+  OneToMany,
 } from "typeorm";
+import AppDataSource from "../database/data-source";
+import { Post } from "./Post";
 
 @Entity()
 export class Comment {
@@ -17,6 +23,22 @@ export class Comment {
   @Column()
   postId: number;
 
+  @ManyToOne(
+    () => Comment,
+    (comment) => {
+      comment.replies, { nullable: true, onDelete: "CASCADE" };
+    }
+  )
+  parentCommentId: Comment;
+
+  @OneToMany(
+    () => Comment,
+    (comment) => {
+      comment.parentCommentId;
+    }
+  )
+  replies: Comment[];
+
   @Column()
   content: string;
 
@@ -28,4 +50,26 @@ export class Comment {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  // 댓글이 생성되면 Post 엔티티에서 댓글 수 1 증가
+  @AfterInsert()
+  async incrementPostCommentsCount() {
+    const postRepository = AppDataSource.getRepository(Post);
+    const post = await postRepository.findOne({ where: { id: this.postId } });
+    if (post) {
+      post.commentsCount += 1;
+      await postRepository.save(post);
+    }
+  }
+
+  // 댓글이 제거되면 Post 엔티티에서 댓글 수 1 감소
+  @AfterRemove()
+  async decrementPostCommentsCount() {
+    const postRepository = AppDataSource.getRepository(Post);
+    const post = await postRepository.findOne({ where: { id: this.postId } });
+    if (post && post.commentsCount > 0) {
+      post.commentsCount -= 1;
+      await postRepository.save(post);
+    }
+  }
 }

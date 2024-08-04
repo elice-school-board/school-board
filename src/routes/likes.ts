@@ -2,8 +2,10 @@ import { Router } from "express";
 import LikeController from "../controllers/likeController";
 
 const router = Router();
+// 좋아요
+router.post("/", LikeController.addLike);
 
-router.post("/likes", LikeController.addLike);
-router.delete("/likes/:id", LikeController.removeLike);
+// 좋아요 해제
+router.delete("/:id", LikeController.removeLike);
 
 export default router;

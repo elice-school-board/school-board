@@ -3,6 +3,7 @@ import { FileController } from "../controllers/fileController";
 import { upload } from "../middlewares/upload";
 const router = Router();
 
-router.post("/files", upload.array("files", 10), FileController.uploadFileToS3); // AWS S3에 파일 업로드
+// AWS S3 파일 저장하고 데이터베이스에 파일에 관한 정보 저장. 10은 한 번 업로드할 때, 10개까지 업로드할 수 있다.
+router.post("/", upload.array("files", 10), FileController.uploadFiles);
 
 export default router;

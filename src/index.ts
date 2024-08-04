@@ -6,6 +6,7 @@ import likeRoutes from './routes/likes';
 import competitionRoutes from './routes/competitions';
 import carouselRoutes from './routes/carousels';
 import fileRoutes from './routes/files';
+// import pointRoutes from "./routes/points";
 import AppDataSource from './database/data-source';
 import authRoutes from './routes/auth';
 import userRoutes from './routes/users';
@@ -17,14 +18,15 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-app.use('/', postRoutes);
+app.use('/posts', postRoutes);
 app.use('/', commentRoutes);
-app.use('/', likeRoutes);
-app.use('/', competitionRoutes);
-app.use('/', carouselRoutes);
-app.use('/', fileRoutes);
+app.use('/likes', likeRoutes);
+app.use('/competitions', competitionRoutes);
+app.use('/carousels', carouselRoutes);
+app.use('/files', fileRoutes);
 app.use('/', authRoutes);
 app.use('/', userRoutes);
+// app.use("/points", pointRoutes);
 
 // 기본 페이지
 app.get('/', (req, res) => {
