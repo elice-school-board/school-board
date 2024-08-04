@@ -1,11 +1,11 @@
 import { Request, Response } from 'express';
 import { User } from '../entities/User';
-import AppDataSource from '../config/ormconfig';
 import bcrypt from 'bcrypt';
 import { RoleType } from '../entities/enums/RoleType';
 import crypto from 'crypto';
 import nodemailer from 'nodemailer';
 import { generateAccessToken, generateRefreshToken } from '../utils/jwt';
+import AppDataSource from '../database/data-source';
 
 export class AuthController {
     // 이메일 인증을 통한 회원가입

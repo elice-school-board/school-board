@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
 import { User } from '../entities/User';
-import AppDataSource from '../config/ormconfig';
 import bcrypt from 'bcrypt';
 import { RoleType } from '../entities/enums/RoleType';
 import { generateAccessToken, verifyRefreshToken } from '../utils/jwt';
+import AppDataSource from '../database/data-source';
 
 export class UserController {
     // 선생님에 의한 사용자 권한 변경
