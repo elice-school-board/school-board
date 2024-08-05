@@ -4,7 +4,7 @@ import bcrypt from 'bcrypt';
 import { RoleType } from '../entities/enums/RoleType';
 import crypto from 'crypto';
 import nodemailer from 'nodemailer';
-import { generateAccessToken, generateRefreshToken } from '../utils/jwt';
+import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '../utils/jwt';
 import AppDataSource from '../database/data-source';
 
 export class AuthController {
@@ -67,6 +67,7 @@ export class AuthController {
                 to: email,
                 subject: '이메일 인증',
                 text: `이메일 인증을 위해 다음 링크를 클릭하세요: \n\n ${process.env.URL}/users/verify/${emailToken}`,
+                html: `<p>이메일 인증을 위해 다음 링크를 클릭하세요:</p><p><a href="${process.env.URL}/users/verify/${emailToken}">이메일 인증 링크</a></p>`,
             };
 
             await transporter.sendMail(mailOptions);
@@ -144,8 +145,21 @@ export class AuthController {
                 return res.status(400).json({ message: '비밀번호가 틀렸습니다.' });
             }
 
-            // 이미 로그인한 사용자인지 확인
+            // RefreshToken 유효성 검사
+            let isValidRefreshToken = false;
             if (user.refreshToken) {
+                try {
+                    verifyRefreshToken(user.refreshToken);
+                    // RefreshToken이 유효한 경우
+                    isValidRefreshToken = true;
+                } catch (error) {
+                    // RefreshToken이 만료되었거나 유효하지 않은 경우
+                    isValidRefreshToken = false;
+                }
+            }
+
+            // 이미 로그인한 사용자인지 확인
+            if (isValidRefreshToken) {
                 return res.status(400).json({ message: '이미 로그인된 상태입니다.' });
             }
 
