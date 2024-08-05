@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import AppDataSource from '../database/data-source';
 import { Point } from '../entities/Point';
-import { Between, Raw } from 'typeorm';
+import { Between } from 'typeorm';
 
 export class PointController {
     // 팀, 이벤트, 점수 생성

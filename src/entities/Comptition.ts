@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 import { CompetitionType } from './enums/CompetitionType';
 
-@Entity()
+@Entity('competitions')
 export class Competition {
     @PrimaryGeneratedColumn()
     id: number;
@@ -22,10 +22,7 @@ export class Competition {
     date: Date;
 
     @Column()
-    competitorA: string;
-
-    @Column()
-    competitorB: string;
+    competitor: string;
 
     @Column({
         type: 'enum',
@@ -34,10 +31,7 @@ export class Competition {
     type: CompetitionType;
 
     @Column({ nullable: true })
-    scoreA?: number;
-
-    @Column({ nullable: true })
-    scoreB?: number;
+    score?: number;
 
     @Column({ nullable: true })
     awards: string;
