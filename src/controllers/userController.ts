@@ -4,6 +4,8 @@ import bcrypt from 'bcrypt';
 import { RoleType } from '../entities/enums/RoleType';
 import { generateAccessToken, verifyRefreshToken } from '../utils/jwt';
 import AppDataSource from '../database/data-source';
+import { Post } from '../entities/Post';
+import { Comment } from '../entities/Comment';
 
 export class UserController {
     // 선생님에 의한 사용자 권한 변경
@@ -189,6 +191,66 @@ export class UserController {
             res.json({ accessToken: newAccessToken });
         } catch (error) {
             res.status(403).json({ message: '유효하지 않은 RefreshToken입니다.' });
+        }
+    };
+
+    // 내가 쓴 게시글 조회
+    static getMyPosts = async (req: Request, res: Response) => {
+        const userId = (req as any).userId;
+
+        if (!userId) {
+            return res.status(401).json({ message: '로그인 해주세요.' });
+        }
+
+        try {
+            const postRepository = AppDataSource.getRepository(Post);
+
+            const myPosts = await postRepository.find({
+                where: { userId: userId },
+                select: ['id', 'title', 'createdAt'],
+                order: { createdAt: 'DESC' },
+            });
+
+            res.status(200).json(myPosts);
+        } catch (error) {
+            res.status(500).json({ message: '서버 오류가 발생했습니다.' });
+        }
+    };
+
+    // 내가 쓴 댓글 조회
+    static getMyComments = async (req: Request, res: Response) => {
+        const userId = (req as any).userId;
+
+        if (!userId) {
+            return res.status(401).json({ message: '로그인 해주세요.' });
+        }
+
+        try {
+            const postRepository = AppDataSource.getRepository(Post);
+            const commentRepository = AppDataSource.getRepository(Comment);
+
+            const myComments = await commentRepository.find({
+                where: { userId: userId },
+                select: ['content', 'createdAt', 'postId'],
+                order: { createdAt: 'DESC' },
+            });
+
+            const myCommentsWithPost = await Promise.all(
+                myComments.map(async comment => {
+                    const post = await postRepository.findOne({
+                        where: { id: comment.postId },
+                        select: ['title'],
+                    });
+                    return {
+                        ...comment,
+                        postTitle: post ? post.title : '삭제된 게시글입니다.',
+                    };
+                }),
+            );
+
+            res.status(200).json(myCommentsWithPost);
+        } catch (error) {
+            res.status(500).json({ message: '서버 오류가 발생했습니다.' });
         }
     };
 }
