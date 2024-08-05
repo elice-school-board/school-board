@@ -6,15 +6,22 @@ import { MoreThanOrEqual } from 'typeorm';
 export class CommentController {
     // 댓글 생성
     static createComment = async (req: Request, res: Response) => {
-        const { userId, content, parentCommentId } = req.body;
+        const { content, parentCommentId } = req.body;
+        const userId = Number((req as any).userId);
         const postId = Number(req.params.postId);
+
+        // 유효성 검사
+        if (isNaN(userId) || isNaN(postId) || !content) {
+            return res.status(400).json({ message: '유효하지 않은 입력 값' });
+        }
+
         const commentRepository = AppDataSource.getRepository(Comment);
 
         const newComment = commentRepository.create({
             userId,
             postId,
             content,
-            parentCommentId: parentCommentId ? await commentRepository.findOne(parentCommentId) : null,
+            parentComment: parentCommentId ? await commentRepository.findOne({ where: { id: parentCommentId } }) : null,
         });
 
         try {
@@ -30,16 +37,16 @@ export class CommentController {
     static getCommentsByPostId = async (req: Request, res: Response) => {
         const postId = Number(req.params.postId);
         const commentRepository = AppDataSource.getRepository(Comment);
-
         try {
             const comments = await commentRepository.find({
-                where: { postId, parentCommentId: null },
+                where: { postId, parentComment: null },
                 relations: ['replies'],
                 order: { createdAt: 'DESC' },
             });
 
             res.json(comments);
         } catch (error) {
+            console.error(error);
             res.status(500).json({ message: '댓글 조회 실패' });
         }
     };
