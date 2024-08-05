@@ -12,7 +12,7 @@ import {
 import AppDataSource from '../database/data-source';
 import { Post } from './Post';
 
-@Entity()
+@Entity('comments')
 export class Comment {
     @PrimaryGeneratedColumn()
     id: number;
@@ -23,20 +23,10 @@ export class Comment {
     @Column()
     postId: number;
 
-    @ManyToOne(
-        () => Comment,
-        comment => {
-            comment.replies, { nullable: true, onDelete: 'CASCADE' };
-        },
-    )
-    parentCommentId: Comment;
+    @ManyToOne(() => Comment, comment => comment.replies, { nullable: true, onDelete: 'CASCADE' })
+    parentComment: Comment;
 
-    @OneToMany(
-        () => Comment,
-        comment => {
-            comment.parentCommentId;
-        },
-    )
+    @OneToMany(() => Comment, comment => comment.parentComment)
     replies: Comment[];
 
     @Column()

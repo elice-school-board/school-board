@@ -1,11 +1,11 @@
 import { Request, Response } from 'express';
 import AppDataSource from '../database/data-source';
 import { Like } from '../entities/Like';
-import { Post } from '../entities/Post';
 
 class LikeController {
     static addLike = async (req: Request, res: Response) => {
-        const { postId, commentId, userId } = req.body;
+        const { postId, commentId } = req.body;
+        const userId = (req as any).userId;
         const likeRepository = AppDataSource.getRepository(Like);
 
         try {
@@ -18,7 +18,7 @@ class LikeController {
             }
 
             // 중복 좋아요 검사
-            let existingLike;
+            let existingLike: Like;
             if (postId !== undefined) {
                 existingLike = await likeRepository.findOne({
                     where: { postId, userId },
@@ -42,6 +42,7 @@ class LikeController {
             await likeRepository.save(newLike);
             res.status(201).json(newLike);
         } catch (error) {
+            console.log(error);
             res.status(500).json({ message: '좋아요 추가 실패' });
         }
     };

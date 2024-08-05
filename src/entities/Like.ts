@@ -3,7 +3,7 @@ import AppDataSource from '../database/data-source';
 import { Post } from './Post';
 import { Comment } from './Comment';
 
-@Entity()
+@Entity('likes')
 @Unique(['userId', 'postId'])
 @Unique(['userId', 'commentId'])
 export class Like {
