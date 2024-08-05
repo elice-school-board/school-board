@@ -6,7 +6,7 @@ import likeRoutes from './routes/likes';
 import competitionRoutes from './routes/competitions';
 import carouselRoutes from './routes/carousels';
 import fileRoutes from './routes/files';
-// import pointRoutes from "./routes/points";
+import pointRoutes from './routes/points';
 import AppDataSource from './database/data-source';
 import authRoutes from './routes/auth';
 import userRoutes from './routes/users';
@@ -26,7 +26,7 @@ app.use('/carousels', carouselRoutes);
 app.use('/files', fileRoutes);
 app.use('/auth', authRoutes);
 app.use('/user', userRoutes);
-// app.use("/points", pointRoutes);
+app.use('/points', pointRoutes);
 
 // 기본 페이지
 app.get('/', (req, res) => {

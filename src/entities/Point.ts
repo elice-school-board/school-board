@@ -1,19 +1,19 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 @Entity()
 export class Point {
-  @PrimaryGeneratedColumn()
-  id: number;
+    @PrimaryGeneratedColumn()
+    id: number;
 
-  @Column()
-  team: string;
+    @Column()
+    team: string;
 
-  @Column()
-  event: string;
+    @Column()
+    event: string;
 
-  @Column()
-  point: number;
+    @Column()
+    score: number;
 
-  @Column()
-  date: Date;
+    @Column()
+    date: Date;
 }
