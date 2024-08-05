@@ -10,5 +10,6 @@ router.delete('/users/:id', authMiddleware, UserController.deleteUser); // 회�
 router.post('/logout', authMiddleware, UserController.logout); // 로그아웃
 router.get('/my-posts', authMiddleware, UserController.getMyPosts); // 내가 쓴 게시글 조회
 router.get('/my-comments', authMiddleware, UserController.getMyComments); // 내가 쓴 댓글 조회
+router.post('/refresh', UserController.reissueAccessToken);
 
 export default router;

@@ -169,8 +169,8 @@ export class UserController {
     };
 
     // RefreshToken 검증 후, AccessToken 재발급
-    static refreshToken = async (req: Request, res: Response) => {
-        const { refreshToken } = req.body;
+    static reissueAccessToken = async (req: Request, res: Response) => {
+        const refreshToken = req.header('Authorization')?.replace('Bearer ', '');
 
         if (!refreshToken) {
             return res.status(400).json({ message: 'RefreshToken이 필요합니다.' });
@@ -181,12 +181,13 @@ export class UserController {
             const userRepository = AppDataSource.getRepository(User);
             const user = await userRepository.findOne({ where: { id: decodedToken.userId } });
 
+            // RefreshToken 유효성 검사 확인
             if (!user || user.refreshToken !== refreshToken) {
                 return res.status(403).json({ message: '유효하지 않은 RefreshToken입니다.' });
             }
 
             // AccessToken 재발급
-            const newAccessToken = generateAccessToken(user.id);
+            const newAccessToken = generateAccessToken(user.id, user.role);
 
             res.json({ accessToken: newAccessToken });
         } catch (error) {

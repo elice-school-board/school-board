@@ -148,22 +148,12 @@ export class AuthController {
             // RefreshToken 유효성 검사
             let isValidRefreshToken = false;
             if (user.refreshToken) {
-                try {
-                    verifyRefreshToken(user.refreshToken);
-                    // RefreshToken이 유효한 경우
-                    isValidRefreshToken = true;
-                } catch (error) {
-                    // RefreshToken이 만료되었거나 유효하지 않은 경우
-                    isValidRefreshToken = false;
-                }
+                verifyRefreshToken(user.refreshToken);
+                // RefreshToken이 유효한 경우
+                isValidRefreshToken = true;
             }
 
-            // 이미 로그인한 사용자인지 확인
-            if (isValidRefreshToken) {
-                return res.status(400).json({ message: '이미 로그인된 상태입니다.' });
-            }
-
-            const accessToken = generateAccessToken(user.id);
+            const accessToken = generateAccessToken(user.id, user.role);
             const refreshToken = generateRefreshToken(user.id);
 
             user.refreshToken = refreshToken;
