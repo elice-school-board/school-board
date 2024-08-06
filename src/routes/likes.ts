@@ -3,6 +3,7 @@ import LikeController from '../controllers/likeController';
 import { isLoggedin } from '../middlewares/auth';
 
 const router = Router();
+
 // 좋아요
 router.post('/', isLoggedin, LikeController.addLike);
 
