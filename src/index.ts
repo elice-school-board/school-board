@@ -37,7 +37,7 @@ app.use('/competitions', competitionRoutes);
 app.use('/carousels', carouselRoutes);
 app.use('/files', fileRoutes);
 app.use('/auth', authRoutes);
-app.use('/user', userRoutes);
+app.use('/users', userRoutes);
 app.use('/points', pointRoutes);
 
 // 기본 페이지

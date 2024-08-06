@@ -1,13 +1,34 @@
 import { Request, Response } from 'express';
-import { User } from '../entities/User';
 import bcrypt from 'bcrypt';
 import { RoleType } from '../entities/enums/RoleType';
 import { generateAccessToken, verifyRefreshToken } from '../utils/jwt';
 import AppDataSource from '../database/data-source';
+import { User } from '../entities/User';
 import { Post } from '../entities/Post';
 import { Comment } from '../entities/Comment';
 
 export class UserController {
+    // 유저 아이디로 유저 정보 조회
+    static getUserById = async (req: Request, res: Response) => {
+        const userId = Number(req.params.id);
+        const userRepository = AppDataSource.getRepository(User);
+
+        try {
+            const userData = await userRepository.findOne({
+                where: { id: userId },
+                select: ['id', 'name', 'email', 'role'], // id, name, email, role만 선택해서 조회
+            });
+            if (!userData) {
+                return res.status(404).json({ message: '유저가 없습니다.' });
+            }
+
+            res.status(200).json(userData);
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ message: '서버 오류로 유저 정보를 불러오지 못했습니다.' });
+        }
+    };
+
     // 선생님에 의한 사용자 권한 변경
     static updateRole = async (req: Request, res: Response) => {
         const user = req.user;
