@@ -10,7 +10,7 @@ import AppDataSource from '../database/data-source';
 export class AuthController {
     // 이메일 인증을 통한 회원가입
     static register = async (req: Request, res: Response) => {
-        const { name, email } = req.body;
+        const { name, email, role } = req.body;
 
         try {
             const userRepository = AppDataSource.getRepository(User);
@@ -46,7 +46,7 @@ export class AuthController {
                 name,
                 email,
                 password: '',
-                role: RoleType.STUDENT,
+                role: role === RoleType.TEACHER ? RoleType.TEACHER : RoleType.STUDENT,
                 emailToken: emailToken,
                 emailTokenExpiry,
             });
@@ -148,22 +148,12 @@ export class AuthController {
             // RefreshToken 유효성 검사
             let isValidRefreshToken = false;
             if (user.refreshToken) {
-                try {
-                    verifyRefreshToken(user.refreshToken);
-                    // RefreshToken이 유효한 경우
-                    isValidRefreshToken = true;
-                } catch (error) {
-                    // RefreshToken이 만료되었거나 유효하지 않은 경우
-                    isValidRefreshToken = false;
-                }
+                verifyRefreshToken(user.refreshToken);
+                // RefreshToken이 유효한 경우
+                isValidRefreshToken = true;
             }
 
-            // 이미 로그인한 사용자인지 확인
-            if (isValidRefreshToken) {
-                return res.status(400).json({ message: '이미 로그인된 상태입니다.' });
-            }
-
-            const accessToken = generateAccessToken(user.id);
+            const accessToken = generateAccessToken(user.id, user.role);
             const refreshToken = generateRefreshToken(user.id);
 
             user.refreshToken = refreshToken;

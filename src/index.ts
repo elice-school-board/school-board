@@ -10,6 +10,18 @@ import pointRoutes from './routes/points';
 import AppDataSource from './database/data-source';
 import authRoutes from './routes/auth';
 import userRoutes from './routes/users';
+import { RoleType } from './entities/enums/RoleType';
+
+declare global {
+    namespace Express {
+        interface Request {
+            user?: {
+                userId: number | undefined;
+                role: RoleType | undefined;
+            };
+        }
+    }
+}
 
 const app = express();
 
@@ -25,7 +37,7 @@ app.use('/competitions', competitionRoutes);
 app.use('/carousels', carouselRoutes);
 app.use('/files', fileRoutes);
 app.use('/auth', authRoutes);
-app.use('/user', userRoutes);
+app.use('/users', userRoutes);
 app.use('/points', pointRoutes);
 
 // 기본 페이지

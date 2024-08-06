@@ -19,7 +19,6 @@ export class User {
         type: 'enum',
         enum: RoleType,
     })
-    @Column()
     role: RoleType;
 
     @Column({ nullable: true })

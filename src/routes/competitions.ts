@@ -1,22 +1,23 @@
 import { Router } from 'express';
 import { CompetitionController } from '../controllers/competitionController';
-import { authMiddleware } from '../middlewares/auth';
+import { checkRole, isLoggedin } from '../middlewares/auth';
+import { RoleType } from '../entities/enums/RoleType';
 
 const router = Router();
 
 // 대회 정보 생성
-router.post('/', authMiddleware, CompetitionController.createCompetition);
+router.post('/', isLoggedin, checkRole(RoleType.ADMIN, RoleType.TEACHER), CompetitionController.createCompetition);
 
 // 대회 정보 목록 조회
-router.get('/', authMiddleware, CompetitionController.getCompetitionsOnScoreBoard);
+router.get('/', isLoggedin, CompetitionController.getCompetitionsOnScoreBoard);
 
 // 대회 정보 상세 조회
-router.get('/:id', authMiddleware, CompetitionController.getCompetitionById);
+router.get('/:id', isLoggedin, CompetitionController.getCompetitionById);
 
 // 대회 정보 수정
-router.put('/:id', authMiddleware, CompetitionController.updateCompetition);
+router.put('/:id', isLoggedin, checkRole(RoleType.ADMIN, RoleType.TEACHER), CompetitionController.updateCompetition);
 
 // 대회 정보 삭제
-router.delete('/:id', authMiddleware, CompetitionController.deleteCompetition);
+router.delete('/:id', isLoggedin, checkRole(RoleType.ADMIN, RoleType.TEACHER), CompetitionController.deleteCompetition);
 
 export default router;

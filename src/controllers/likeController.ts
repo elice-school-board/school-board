@@ -5,7 +5,7 @@ import { Like } from '../entities/Like';
 class LikeController {
     static addLike = async (req: Request, res: Response) => {
         const { postId, commentId } = req.body;
-        const userId = (req as any).userId;
+        const userId = req.user.userId;
         const likeRepository = AppDataSource.getRepository(Like);
 
         try {
@@ -48,7 +48,7 @@ class LikeController {
     };
 
     static removeLike = async (req: Request, res: Response) => {
-        const likeId = parseInt(req.params.id);
+        const likeId = Number(req.params.id);
         const likeRepository = AppDataSource.getRepository(Like);
 
         try {

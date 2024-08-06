@@ -1,6 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { CompetitionType } from './enums/CompetitionType';
-
+import { Competitor } from './Competitor';
 @Entity('competitions')
 export class Competition {
     @PrimaryGeneratedColumn()
@@ -21,24 +21,18 @@ export class Competition {
     @Column()
     date: Date;
 
-    @Column()
-    competitor: string;
-
     @Column({
         type: 'enum',
         enum: CompetitionType,
     })
     type: CompetitionType;
 
-    @Column({ nullable: true })
-    score?: number;
+    @OneToMany(() => Competitor, competitor => competitor.competition)
+    competitors: Competitor[];
 
     @Column({ nullable: true })
-    awards: string;
+    award: string;
 
     @Column({ nullable: true })
     result?: string;
-
-    @Column({ default: false })
-    isCarousel: boolean; // 캐러셀에 올릴지 여부
 }

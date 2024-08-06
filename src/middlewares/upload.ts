@@ -18,7 +18,6 @@ const s3 = new S3Client({
 const upload = multer({
     storage: multerS3({
         s3: s3, // 위에서 생성한 클라이언트 객체
-        acl: 'public-read-write', // 권한
         bucket: process.env.AWS_BUCKET_NAME, // 버킷 이름
         metadata: function (req, file, cb) {
             cb(null, { fieldName: file.fieldname });
