@@ -10,6 +10,18 @@ import pointRoutes from './routes/points';
 import AppDataSource from './database/data-source';
 import authRoutes from './routes/auth';
 import userRoutes from './routes/users';
+import { RoleType } from './entities/enums/RoleType';
+
+declare global {
+    namespace Express {
+        interface Request {
+            user?: {
+                userId: number | undefined;
+                role: RoleType | undefined;
+            };
+        }
+    }
+}
 
 const app = express();
 
