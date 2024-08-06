@@ -37,6 +37,7 @@ export class PointController {
         // 점수판을 보여주는 기간 (해당 연도)
         const startDate = new Date(`${year}-01-01`);
         const endDate = new Date(`${year}-12-31`);
+
         try {
             // 기록한 팀 최신순대로 보여줌(나이 어린 팀이 처음온다)
             const scores = await pointRepository.find({
