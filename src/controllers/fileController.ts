@@ -15,11 +15,11 @@ export class FileController {
             const commentFileRepository = AppDataSource.getRepository(CommentFile);
 
             let { userId, postId, commentId } = req.body;
-            userId = userId ? parseInt(userId) : null; // userId가 있으면 정수로 바꿔서 저장. 없으면 null로 저장
+            userId = userId ? parseInt(userId) : null;
             postId = postId ? parseInt(postId) : null;
             commentId = commentId ? parseInt(commentId) : null;
 
-            if (!files) {
+            if (!files || files.length === 0) {
                 return res.status(400).json({ message: 'No file uploaded' });
             }
 

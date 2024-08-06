@@ -6,7 +6,7 @@ export class UserFile {
     id: number;
 
     @Column()
-    userId: string;
+    userId: number;
 
     @Column()
     fileId: number;
