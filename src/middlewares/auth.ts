@@ -3,7 +3,7 @@ import { verifyAccessToken } from '../utils/jwt';
 import { RoleType } from '../entities/enums/RoleType';
 
 // AccessToken 검증 미들웨어
-export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
+export const isLoggedin = (req: Request, res: Response, next: NextFunction) => {
     const accessToken = req.header('Authorization')?.replace('Bearer ', '');
 
     if (!accessToken) {
@@ -12,8 +12,10 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
 
     try {
         const decodedToken = verifyAccessToken(accessToken);
-        (req as any).userId = decodedToken.userId;
-        (req as any).role = decodedToken.role;
+        req.user = {
+            userId: decodedToken.userId,
+            role: decodedToken.role as RoleType,
+        };
 
         next();
     } catch (error) {
@@ -22,16 +24,15 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
 };
 
 // 역할 검증 미들웨어
-export const checkRole = (requiredRole: RoleType) => {
+export const checkRole = (...requiredRoles: RoleType[]) => {
     return (req: Request, res: Response, next: NextFunction) => {
-        const userId = (req as any).userId;
-        const userRole = (req as any).role; // 로그인한 사용자의 역할
+        const user = req.user;
 
-        if (!userId) {
+        if (!user) {
             return res.status(401).json({ message: '로그인이 필요합니다.' });
         }
 
-        if (userRole !== requiredRole) {
+        if (!requiredRoles.includes(user.role)) {
             return res.status(403).json({ message: '권한이 없습니다.' });
         }
 

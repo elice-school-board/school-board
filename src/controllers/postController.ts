@@ -9,7 +9,7 @@ import { Between, FindOptionsWhere, In, LessThan, MoreThan } from 'typeorm';
 export class PostController {
     // 게시글 생성
     static createPost = async (req: Request, res: Response) => {
-        const userId = Number((req as any).userId);
+        const userId = req.user.userId;
         const { boardId, categoryId, title, content, season, isAnonymous } = req.body;
         const postRepository = AppDataSource.getRepository(Post);
 
@@ -75,7 +75,7 @@ export class PostController {
     static getAllPosts = async (req: Request, res: Response) => {
         const { sort, limit, cursor } = req.query; // 쿼리에서 sort, limit를 가져온다.
         const { boardName, categoryName } = req.body; // body에서 boardName, categoryName을 가져온다.
-        const userId = (req as any).userId;
+        const userId = req.user.userId;
 
         const boardRepository = AppDataSource.getRepository(Board);
         const categoryRepository = AppDataSource.getRepository(Category);
@@ -187,7 +187,7 @@ export class PostController {
 
     // 상세 게시글 조회
     static getPostById = async (req: Request, res: Response) => {
-        const postId = parseInt(req.params.id);
+        const postId = Number(req.params.id);
         const userRepository = AppDataSource.getRepository(User);
         const postRepository = AppDataSource.getRepository(Post);
         const userRole = (req as any).role; // 요청한 사람 권한
@@ -244,7 +244,7 @@ export class PostController {
 
     // 게시글 삭제
     static deletePost = async (req: Request, res: Response) => {
-        const postId = parseInt(req.params.id);
+        const postId = Number(req.params.id);
         const postRepository = AppDataSource.getRepository(Post);
 
         try {

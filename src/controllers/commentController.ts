@@ -7,7 +7,7 @@ export class CommentController {
     // 댓글 생성
     static createComment = async (req: Request, res: Response) => {
         const { content, parentCommentId } = req.body;
-        const userId = Number((req as any).userId);
+        const userId = req.user.userId;
         const postId = Number(req.params.postId);
 
         // 유효성 검사
