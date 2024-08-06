@@ -10,7 +10,7 @@ import AppDataSource from '../database/data-source';
 export class AuthController {
     // 이메일 인증을 통한 회원가입
     static register = async (req: Request, res: Response) => {
-        const { name, email } = req.body;
+        const { name, email, role } = req.body;
 
         try {
             const userRepository = AppDataSource.getRepository(User);
@@ -46,7 +46,7 @@ export class AuthController {
                 name,
                 email,
                 password: '',
-                role: RoleType.STUDENT,
+                role: role === RoleType.TEACHER ? RoleType.TEACHER : RoleType.STUDENT,
                 emailToken: emailToken,
                 emailTokenExpiry,
             });
