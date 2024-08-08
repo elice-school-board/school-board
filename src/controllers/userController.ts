@@ -180,6 +180,9 @@ export class UserController {
             }
 
             // 로그아웃
+            if (!userData.refreshToken) {
+                return res.status(400).json({ message: '로그아웃된 상태입니다.' });
+            }
             userData.refreshToken = null;
             await userRepository.save(userData);
 

@@ -151,26 +151,25 @@ export class AuthController {
             if (user.refreshToken) {
                 try {
                     const payload = verifyRefreshToken(user.refreshToken);
-                    console.log(payload);
+
                     // RefreshToken이 유효한 경우
                     isValidRefreshToken = true;
                 } catch (error) {
-                    // RefreshToken이 유효하지 않은 경우
-                    if (error.message === 'TokenExpiredError') {
-                        console.error('Refresh token expired');
-                        isValidRefreshToken = false;
-                    } else if (error.message === 'JsonWebTokenError') {
-                        console.error('Invalid refresh token');
-                        isValidRefreshToken = false;
-                    } else {
-                        console.error('Unknown token error');
-                        isValidRefreshToken = false;
+                    // RefreshToken 유효성 검사
+                    let isValidRefreshToken = false;
+                    if (user.refreshToken) {
+                        try {
+                            verifyRefreshToken(user.refreshToken);
+                            isValidRefreshToken = true;
+                        } catch (error) {
+                            isValidRefreshToken = false;
+                        }
                     }
                 }
             }
 
             const accessToken = generateAccessToken(user.id, user.role);
-            let refreshToken;
+            let refreshToken: string;
 
             // RefreshToken이 유효하지 않으면 새로 생성
             if (!isValidRefreshToken) {

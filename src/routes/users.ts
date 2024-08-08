@@ -9,7 +9,7 @@ router.post('/update-role', isLoggedin, UserController.updateRole); // 사용자
 router.post('/logout', isLoggedin, UserController.logout); // 로그아웃
 router.get('/my-posts', isLoggedin, UserController.getMyPosts); // 내가 쓴 게시글 조회
 router.get('/my-comments', isLoggedin, UserController.getMyComments); // 내가 쓴 댓글 조회
-router.post('/refresh', UserController.reissueAccessToken);
+router.post('/refresh', UserController.reissueAccessToken); // AccessToken 재발행
 
 // 가변적인 경로는 불변적인 경로 아래에 둔다.
 router.get('/:id', UserController.getUserById); // 유저 정보 조회
