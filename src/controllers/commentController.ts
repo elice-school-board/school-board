@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { Comment } from '../entities/Comment';
 import AppDataSource from '../database/data-source';
-import { MoreThanOrEqual } from 'typeorm';
+import { IsNull, MoreThanOrEqual } from 'typeorm';
 
 export class CommentController {
     // 댓글 생성
@@ -17,16 +17,34 @@ export class CommentController {
 
         const commentRepository = AppDataSource.getRepository(Comment);
 
-        const newComment = commentRepository.create({
-            userId,
-            postId,
-            content,
-            parentComment: parentCommentId ? await commentRepository.findOne({ where: { id: parentCommentId } }) : null,
-        });
-
         try {
+            // 부모 댓글이 있는 경우 부모 댓글 찾기
+            let parentComment = null;
+            if (parentCommentId) {
+                parentComment = await commentRepository.findOne({ where: { id: parentCommentId } });
+                if (!parentComment) {
+                    return res.status(400).json({ message: '유효하지 않음 부모 댓글 ID' });
+                }
+            }
+
+            // 새로운 댓글 생성
+            const newComment = commentRepository.create({
+                userId,
+                postId,
+                content,
+                parentComment,
+            });
+
+            // 댓글 저장
             await commentRepository.save(newComment);
-            res.status(201).json(newComment);
+
+            // 새로운 댓글 정보와 관련된 정보 반환
+            const savedComment = await commentRepository.findOne({
+                where: { id: newComment.id },
+                relations: ['parentComment'],
+            });
+
+            res.status(201).json(savedComment);
         } catch (error) {
             console.error(error);
             res.status(400).json({ message: '댓글 생성 실패' });
@@ -36,12 +54,23 @@ export class CommentController {
     // 특정 게시글의 댓글 및 대댓글 조회
     static getCommentsByPostId = async (req: Request, res: Response) => {
         const postId = Number(req.params.postId);
+
+        if (isNaN(postId)) {
+            return res.status(400).json({ message: '유효하지 않은 입력 값' });
+        }
         const commentRepository = AppDataSource.getRepository(Comment);
+
         try {
+            // 일반 댓글만 조회하고, 그에 속한 대댓글도 함께 가져오기
             const comments = await commentRepository.find({
-                where: { postId, parentComment: null },
+                where: { postId, parentComment: IsNull() },
                 relations: ['replies'],
-                order: { createdAt: 'DESC' },
+                order: { createdAt: 'ASC' },
+            });
+
+            // 대댓글들도 생성된 순서대로 정렬
+            comments.forEach(comment => {
+                comment.replies.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
             });
 
             res.json(comments);
