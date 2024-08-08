@@ -11,14 +11,18 @@ export class AuthController {
     // 이메일 인증을 통한 회원가입
     static register = async (req: Request, res: Response) => {
         const { name, email, role } = req.body;
+        const userRepository = AppDataSource.getRepository(User);
 
         try {
-            const userRepository = AppDataSource.getRepository(User);
-
             // 이메일 존재 여부 확인
             const findUser = await userRepository.findOne({ where: { email } });
 
             if (findUser) {
+                // 가입된 이메일인 경우
+                if (findUser.emailToken == null && findUser.emailTokenExpiry == null) {
+                    return res.status(400).json({ message: '이미 가입된 이메일입니다.' });
+                }
+
                 // 가입되지 않은 이메일인 경우
                 if (findUser.emailToken && findUser.emailTokenExpiry) {
                     const currentTime = new Date();
@@ -30,9 +34,6 @@ export class AuthController {
                         // 이메일 인증 토큰이 만료된 경우
                         await userRepository.remove(findUser);
                     }
-                } else {
-                    // 이미 가입된 이메일인 경우
-                    return res.status(400).json({ message: '이미 가입된 이메일입니다.' });
                 }
             }
 
@@ -148,16 +149,37 @@ export class AuthController {
             // RefreshToken 유효성 검사
             let isValidRefreshToken = false;
             if (user.refreshToken) {
-                verifyRefreshToken(user.refreshToken);
-                // RefreshToken이 유효한 경우
-                isValidRefreshToken = true;
+                try {
+                    const payload = verifyRefreshToken(user.refreshToken);
+                    console.log(payload);
+                    // RefreshToken이 유효한 경우
+                    isValidRefreshToken = true;
+                } catch (error) {
+                    // RefreshToken이 유효하지 않은 경우
+                    if (error.message === 'TokenExpiredError') {
+                        console.error('Refresh token expired');
+                        isValidRefreshToken = false;
+                    } else if (error.message === 'JsonWebTokenError') {
+                        console.error('Invalid refresh token');
+                        isValidRefreshToken = false;
+                    } else {
+                        console.error('Unknown token error');
+                        isValidRefreshToken = false;
+                    }
+                }
             }
 
             const accessToken = generateAccessToken(user.id, user.role);
-            const refreshToken = generateRefreshToken(user.id);
+            let refreshToken;
 
-            user.refreshToken = refreshToken;
-            await userRepository.save(user);
+            // RefreshToken이 유효하지 않으면 새로 생성
+            if (!isValidRefreshToken) {
+                refreshToken = generateRefreshToken(user.id);
+                user.refreshToken = refreshToken;
+                await userRepository.save(user);
+            } else {
+                refreshToken = user.refreshToken;
+            }
 
             res.status(200).json({ message: '로그인에 성공하였습니다.', accessToken, refreshToken });
         } catch (error) {
@@ -169,9 +191,8 @@ export class AuthController {
     static findPassword = async (req: Request, res: Response) => {
         const { name, email } = req.body;
 
+        const userRepository = AppDataSource.getRepository(User);
         try {
-            const userRepository = AppDataSource.getRepository(User);
-
             // 이름과 이메일이 일치하는 사용자 찾기
             const user = await userRepository.findOne({ where: { name, email } });
             if (!user) {
