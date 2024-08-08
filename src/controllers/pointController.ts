@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import AppDataSource from '../database/data-source';
 import { Point } from '../entities/Point';
-import { Between } from 'typeorm';
+import { Between, In } from 'typeorm';
 
 export class PointController {
     // 팀, 이벤트, 점수 생성
@@ -10,19 +10,17 @@ export class PointController {
         const pointRepository = AppDataSource.getRepository(Point);
 
         try {
-            // 하나의 event에 해당하는 팀들, 점수들, 날짜 for문으로 하나씩 저장한다.
-            let points = [];
-            for (let i = 0; i < teamNames.length; i++) {
-                const newPoint = pointRepository.create({
-                    team: teamNames[i],
+            // 여러 개의 점수를 한 번에 생성
+            const newPoints = teamNames.map((teamName: string, index: number) => {
+                return pointRepository.create({
+                    team: teamName,
                     event: event,
-                    score: scores[i],
+                    score: scores[index],
                     date: date,
                 });
+            });
 
-                const point = await pointRepository.save(newPoint);
-                points.push(point);
-            }
+            const points = await pointRepository.save(newPoints);
             return res.status(200).json({ message: '점수 생성 성공', points });
         } catch (error) {
             res.status(500).json({ message: '점수 생성 실패' });
@@ -35,19 +33,29 @@ export class PointController {
         const pointRepository = AppDataSource.getRepository(Point);
 
         // 점수판을 보여주는 기간 (해당 연도)
-        const startDate = new Date(`${year}-01-01`);
-        const endDate = new Date(`${year}-12-31`);
+        const startDate = new Date(`${year}-08-01`);
+        const endDate = new Date(`${year}-07-31`);
+        endDate.setFullYear(endDate.getFullYear() + 1); // endDate의 연도를 다음 해로 설정
 
         try {
-            // 기록한 팀 최신순대로 보여줌(나이 어린 팀이 처음온다)
+            // 기록한 팀 순서대로
             const scores = await pointRepository.find({
                 where: {
                     date: Between(startDate, endDate),
                 },
-                order: { id: 'DESC' },
+                order: { id: 'ASC' },
             });
 
-            res.status(200).json(scores);
+            const totalScores = await pointRepository
+                .createQueryBuilder('points')
+                .select('points.team')
+                .addSelect('SUM(points.score)', 'totalScore')
+                .where('points.date BETWEEN :startDate AND :endDate', { startDate, endDate })
+                .groupBy('points.team')
+                .orderBy('MIN(points.id)', 'ASC') // 최소 id 기준으로 정렬
+                .getRawMany();
+
+            res.status(200).json({ scores, totalScores });
         } catch (error) {
             console.error(error);
             res.status(404).json({ message: 'Grade Points를 조회하는데 실패했습니다.' });
@@ -60,25 +68,25 @@ export class PointController {
         const pointRepository = AppDataSource.getRepository(Point);
 
         try {
-            // 반복문을 통해 각각의 점수를 업데이트
-            let updatedPoints = [];
-            for (let i = 0; i < teamNames.length; i++) {
-                const point = await pointRepository.findOne({ where: { id: pointsId[i] } });
+            // 업데이트할 점수들을 배열로 생성
+            const pointsToUpdate = await Promise.all(
+                pointsId.map(async (id: number, index: number) => {
+                    const point = await pointRepository.findOne({ where: { id } });
 
-                if (point) {
-                    point.team = teamNames[i];
-                    point.event = event;
-                    point.score = scores[i];
-                    point.date = date;
-                    await pointRepository.save(point);
-                    updatedPoints.push(point);
-                } else {
-                    res.status(404).json({ message: '점수를 찾을 수 없습니다.' });
-                }
-            }
-            res.status(200).json(updatedPoints);
+                    if (point) {
+                        point.team = teamNames[index];
+                        point.event = event;
+                        point.score = scores[index];
+                        point.date = date;
+                        return point;
+                    } else {
+                        throw new Error('점수를 찾을 수 없습니다.');
+                    }
+                }),
+            );
 
-            res.status(200).json({ message: '점수가 성공적으로 업데이트되었습니다.' });
+            const updatedPoints = await pointRepository.save(pointsToUpdate);
+            res.status(200).json({ message: '점수가 성공적으로 업데이트되었습니다.', updatedPoints });
         } catch (error) {
             console.error(error);
             res.status(500).json({ message: '점수 업데이트 실패' });
@@ -91,15 +99,13 @@ export class PointController {
         const pointRepository = AppDataSource.getRepository(Point);
 
         try {
-            for (let i = 0; i < pointsId.length; i++) {
-                const point = await pointRepository.findOne({ where: { id: pointsId[i] } });
+            const pointsToDelete = await pointRepository.findBy({ id: In(pointsId) });
 
-                if (point) {
-                    await pointRepository.delete(point);
-                } else {
-                    res.status(404).json({ message: '점수를 찾을 수 없습니다' });
-                }
+            if (pointsToDelete.length !== pointsId.length) {
+                return res.status(404).json({ message: '일부 점수를 찾을 수 없습니다.' });
             }
+
+            await pointRepository.remove(pointsToDelete);
 
             res.status(204).send();
         } catch (error) {
