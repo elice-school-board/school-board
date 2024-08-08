@@ -32,13 +32,21 @@ export class CompetitionController {
                 const newCompetitors = competitors.map((competitor: any) => {
                     return competitorRepository.create({
                         competition: newCompetition,
+                        name: competitor.name,
                         score: competitor.score,
                     });
                 });
 
                 await competitorRepository.save(newCompetitors);
             }
-            res.status(201).json(newCompetition);
+
+            // 새로 생성된 대회와 관련된 Competitor 데이터를 포함하여 다시 조회
+            const savedCompetition = await competitionRepository.findOne({
+                where: { id: newCompetition.id },
+                relations: ['competitors'], // 관계를 명시하여 관련 데이터를 포함
+            });
+
+            res.status(201).json(savedCompetition);
         } catch (error) {
             console.error(error);
             res.status(400).json({ message: '대회 정보 생성 실패' });
@@ -48,6 +56,7 @@ export class CompetitionController {
     // 모든 대회 정보 조회
     static getCompetitionsOnScoreBoard = async (req: Request, res: Response) => {
         const competitionRepository = AppDataSource.getRepository(Competition);
+
         try {
             const competitions = await competitionRepository.find({
                 order: { date: 'DESC' },
