@@ -6,9 +6,12 @@ export class Competitor {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @ManyToOne(() => Competition, competition => competition.competitors)
-    competition: Competition;
+    @Column({ nullable: true })
+    name: string;
 
     @Column({ nullable: true })
     score: number;
+
+    @ManyToOne(() => Competition, competition => competition.competitors)
+    competition: Competition;
 }

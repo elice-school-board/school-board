@@ -27,12 +27,12 @@ export class Competition {
     })
     type: CompetitionType;
 
-    @OneToMany(() => Competitor, competitor => competitor.competition)
-    competitors: Competitor[];
-
     @Column({ nullable: true })
     award: string;
 
     @Column({ nullable: true })
     result?: string;
+
+    @OneToMany(() => Competitor, competitor => competitor.competition)
+    competitors: Competitor[];
 }

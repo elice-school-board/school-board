@@ -39,8 +39,8 @@ export class UserController {
 
         const { memberId, role } = req.body;
 
+        const userRepository = AppDataSource.getRepository(User);
         try {
-            const userRepository = AppDataSource.getRepository(User);
             const userData = await userRepository.findOne({ where: { id: user.userId } });
 
             // 선생님 여부 확인
