@@ -4,6 +4,7 @@ import { Competition } from '../entities/Competition';
 import moment from 'moment-timezone';
 import { config } from './config/config';
 import { Competitor } from '../entities/Competitor';
+import { Category } from '../entities/Category';
 
 export class CompetitionController {
     // 대회 정보 생성
@@ -54,6 +55,7 @@ export class CompetitionController {
     };
 
     // 모든 대회 정보 조회
+    // 몇개 보이게 할지는 프론트에서 정하면 됨
     static getCompetitionsOnScoreBoard = async (req: Request, res: Response) => {
         const competitionRepository = AppDataSource.getRepository(Competition);
 
@@ -74,28 +76,41 @@ export class CompetitionController {
         }
     };
 
-    // 특정 대회 정보 조회
-    static getCompetitionById = async (req: Request, res: Response) => {
-        const competitionId = Number(req.params.id);
+    // 카테고리 아이디별 각 종목 상위 3개 대회 조회
+    static getTopThreeCompetition = async (req: Request, res: Response) => {
+        const categoryId = Number(req.params.categoryId);
         const competitionRepository = AppDataSource.getRepository(Competition);
+        const categoryRepository = AppDataSource.getRepository(Category);
 
         try {
-            const competition = await competitionRepository.findOne({
-                where: { id: competitionId },
-                relations: ['competitors'], // Competitors 데이터를 함께 조회
+            // 해당 카테고리 존재 여부 확인
+            const category = await categoryRepository.findOne({ where: { id: categoryId } });
+            if (!category) {
+                return res.status(404).json({ message: '카테고리를 찾을 수 없습니다.' });
+            }
+
+            // 카테고리에 속한 최신 대회 3개 조회
+            const topCompetitions = await competitionRepository.find({
+                where: { categoryId },
+                order: {
+                    date: 'DESC',
+                },
+                take: 3,
+                relations: ['competitors'], // Competitors 및 Category 데이터를 함께 조회
             });
 
-            if (competition) {
-                const localTimeCompetition = {
+            if (topCompetitions.length > 0) {
+                const localTimeCompetitions = topCompetitions.map(competition => ({
                     ...competition,
-                    date: moment.tz(competition?.date, config.timezone).format('YYYY-MM-DD'),
-                };
+                    date: moment.tz(competition.date, config.timezone).format('YYYY-MM-DD'),
+                }));
 
-                res.status(200).json(localTimeCompetition);
+                res.status(200).json({ competitions: localTimeCompetitions });
             } else {
                 res.status(404).json({ message: '대회 정보를 찾을 수 없습니다.' });
             }
         } catch (error) {
+            console.error(error);
             res.status(500).json({ message: '대회 정보 조회 실패' });
         }
     };

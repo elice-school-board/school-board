@@ -11,8 +11,8 @@ router.post('/', isLoggedin, checkRole(RoleType.ADMIN, RoleType.TEACHER), Compet
 // 대회 정보 목록 조회
 router.get('/', isLoggedin, CompetitionController.getCompetitionsOnScoreBoard);
 
-// 대회 정보 상세 조회
-router.get('/:id', isLoggedin, CompetitionController.getCompetitionById);
+// 대회 종목별 상위 3개 조회
+router.get('/:categoryId', isLoggedin, CompetitionController.getTopThreeCompetition);
 
 // 대회 정보 수정
 router.put('/:id', isLoggedin, checkRole(RoleType.ADMIN, RoleType.TEACHER), CompetitionController.updateCompetition);

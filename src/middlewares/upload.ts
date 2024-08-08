@@ -19,6 +19,7 @@ const upload = multer({
     storage: multerS3({
         s3: s3, // 위에서 생성한 클라이언트 객체
         bucket: process.env.AWS_BUCKET_NAME, // 버킷 이름
+        acl: 'public-read', // 퍼블릭 읽기 설정 추가
         metadata: function (req, file, cb) {
             cb(null, { fieldName: file.fieldname });
         },
