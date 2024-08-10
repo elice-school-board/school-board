@@ -1,20 +1,17 @@
-import dotenv from 'dotenv';
+require('dotenv').config();
 
-dotenv.config({ path: process.env.NODE_ENV === 'production' ? './prod.env' : '././env' });
-
-export default {
+module.exports = {
     apps: [
         {
             name: 'school-board', // 애플리케이션 이름
-            script: 'ts-node', // TypeScript 파일을 실행하기 위해 ts-node 사용
-            args: 'src/index.ts', // 시작할 파일
-            interpreter: 'node', // node 인터프리터 사용
-            instances: 1, // 클러스터 모드 사용 시 인스턴스 수 (기본값: 1)
-            autorestart: true, // 자동 재시작 설정
-            watch: false, // 파일 변경 시 자동 재시작 (배포환경에서는 false)
-            max_memory_restart: '1G', // 메모리 사용이 1GB를 넘으면 재시작
+            script: 'dist/index.js',
+            instances: 1, // 여러 인스턴스를 실행할 경우, 기본값 1
+            autorestart: true, // 애플리케이션이 중지되었을 때 자동으로 재시작
+            watch: false, // 파일 변경 시 자동 재시작 여부 (true로 설정 시 개발 환경에 유용)
+            max_memory_restart: '4G', // 메모리 사용량이 4GB를 초과하면 재시작
             env: {
                 NODE_ENV: process.env.NODE_ENV || 'development',
+                PORT: process.env.PORT,
                 DB_HOST: process.env.DB_HOST,
                 DB_PORT: process.env.DB_PORT,
                 DB_USERNAME: process.env.DB_USERNAME,
