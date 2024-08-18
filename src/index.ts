@@ -13,6 +13,7 @@ import authRoutes from './routes/auth';
 import userRoutes from './routes/users';
 import boardRoutes from './routes/boards';
 import categoryRoutes from './routes/categories';
+import coachRoutes from './routes/coach';
 import { RoleType } from './entities/enums/RoleType';
 
 declare global {
@@ -44,6 +45,7 @@ app.use('/files', fileRoutes);
 app.use('/auth', authRoutes);
 app.use('/users', userRoutes);
 app.use('/points', pointRoutes);
+app.use('/coach', coachRoutes);
 
 // 기본 페이지
 app.get('/', (req, res) => {

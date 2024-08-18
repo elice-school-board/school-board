@@ -4,6 +4,7 @@ import AppDataSource from '../database/data-source';
 import { UserFile } from '../entities/UserFile';
 import { PostFile } from '../entities/PostFile';
 import { CommentFile } from '../entities/CommentFile';
+import { CoachFile } from '../entities/CoachFiles';
 
 export class FileController {
     static uploadFiles = async (req: Request, res: Response) => {
@@ -13,19 +14,21 @@ export class FileController {
             const userFileRepository = AppDataSource.getRepository(UserFile);
             const postFileRepository = AppDataSource.getRepository(PostFile);
             const commentFileRepository = AppDataSource.getRepository(CommentFile);
+            const coachFileRepository = AppDataSource.getRepository(CoachFile);
 
-            let { userId, postId, commentId } = req.body;
+            let { userId, postId, commentId, coachId } = req.body;
             userId = userId ? parseInt(userId) : null;
             postId = postId ? parseInt(postId) : null;
             commentId = commentId ? parseInt(commentId) : null;
+            coachId = coachId ? parseInt(coachId) : null;
 
             if (!files || files.length === 0) {
                 return res.status(400).json({ message: 'No file uploaded' });
             }
 
-            if (!userId && !postId && !commentId) {
-                // userId, postId, commentId 모두 없을 때
-                return res.status(400).json({ message: 'userId, postId, commentId 중 하나는 필요합니다.' });
+            if (!userId && !postId && !commentId && !coachId) {
+                // userId, postId, commentId, coachId 모두 없을 때
+                return res.status(400).json({ message: 'userId, postId, commentId, coachId 중 하나는 필요합니다.' });
             }
 
             /**
@@ -67,6 +70,14 @@ export class FileController {
                         fileId: savedFile.id,
                     });
                     await commentFileRepository.save(commentFile);
+                }
+
+                if (coachId) {
+                    const coachFile = coachFileRepository.create({
+                        coachId,
+                        fileId: savedFile.id,
+                    });
+                    await coachFileRepository.save(coachFile);
                 }
 
                 return newFile;
