@@ -41,8 +41,8 @@ export class PostController {
         const postRepository = AppDataSource.getRepository(Post);
         const categoryRepository = AppDataSource.getRepository(Category);
 
-        const startDate = new Date(`${year}-01-01`);
-        const endDate = new Date(`${year}-12-31`);
+        const startDate = new Date(`${year}-08-01`);
+        const endDate = new Date(`${year}-07-31`);
 
         try {
             // 스포츠 게시글을 year, seaon에 따라서 분류
@@ -92,7 +92,6 @@ export class PostController {
                     break;
 
                 // 오래된순
-
                 case 'oldest':
                     order = { createdAt: 'ASC' };
                     break;
